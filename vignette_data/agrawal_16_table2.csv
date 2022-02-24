@@ -1,0 +1,11 @@
+cancer, dose, n, N
+MEL, 0.1, 6, 17
+MEL, 0.3, 5, 18
+MEL, 1, 11, 35
+MEL, 3, 7, 17
+MEL, 10, 4, 20
+NSCLC, 1 , 1, 33
+NSCLC, 3, 9, 37
+NSCLC, 10, 12, 59
+RCC, 1, 5, 18
+RCC, 10, 5, 16

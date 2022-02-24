@@ -1,0 +1,14 @@
+name: see-value
+title: See-Value
+username: steinanf
+account: steinanf
+server: rsconnect-prod.dit.eu.novartis.net
+hostUrl: https://rsconnect-prod.dit.eu.novartis.net:443/__api__
+appId: 1085
+bundleId: 3807
+url: https://rsconnect-prod.dit.eu.novartis.net/content/1085/
+when: 1643833208.73809
+lastSyncTime: 1643833208.7381
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .Rprofile
