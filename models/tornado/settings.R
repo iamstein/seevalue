@@ -12,16 +12,59 @@ app_settings$apptitle = "tornado" # Title of app, to be displayed on top of anal
 library(ggplot2)
 
 
-get_tornado_lineup <- function(data, input) {
-	lineup(null_permute(input$Z), data)
+####
+# Data must be in a "long" format where each row corresponds to a patient x ae
+# Eventually need to figure out how to specify an argument that is passed as input
+# to check if we should do a differential tornado plot or not
+
+get_tornado_lineup <- function(orig_data, input) {
+  raw_data <- 
+    orig_data %>% # make a column for every condition
+    rename(patient_num = input$patient_num,
+           treatment = input$treatment,
+           condition = input$condition,
+           present = input$present) %>%
+    pivot_wider(id_cols = c("patient_num", "treatment"), # make wider so each condition has a column
+                names_from = condition, # this makes it easier to get 
+                values_from = present) %>%
+    select(-patient_num)
+  
+  width <- 0.95
+  permuted_data <- 
+    nullabor::lineup(method = nullabor::null_permute("treatment"),
+                     true = raw_data, n = 20) %>%
+    group_by(.sample, treatment) %>% # prepare to compute prevalence in each arm
+    mutate_at(vars(-group_cols()), mean) %>% # computes the prevalence in each arm
+    distinct() %>% # get rid of an duplicate rows
+    ungroup() %>% # no longer need a grouping
+    pivot_longer(cols = -one_of(c("treatment", ".sample")),
+                 names_to = "condition", values_to = "prop") %>%
+    mutate(condition_num = as.numeric(factor(condition, levels = unique(condition))),
+           arm = factor(treatment, levels = c(0,1), labels = c("Control", "Treated")),
+           ymin = ifelse(treatment == 0, -1 * prop, 0),
+           ymax = ifelse(treatment == 0, 0, 1 * prop),
+           xmin = condition_num - width/2,
+           xmax = condition_num + width/2)
+  return(permuted_data)
+	#lineup(null_permute(input$Z), data)
 }
 
 show_tornado_lineup <- function(lineup_data, input) {
-	lineup_data[,input$Z] <- factor(lineup_data[,input$Z])
-	ggplot(data=lineup_data, aes_string(x=input$X, y=input$Y, color=input$Z)) +
-	    facet_wrap(~ .sample) +
-	    geom_point() +
-	    scale_fill_discrete() 
+	#lineup_data[,input$Z] <- factor(lineup_data[,input$Z])
+	#ggplot(data=lineup_data, aes_string(x=input$X, y=input$Y, color=input$Z)) +
+	#    facet_wrap(~ .sample) +
+	#    geom_point() +
+	#    scale_fill_discrete() 
+  ggplot(data = lineup_data) +
+    facet_wrap(~.sample) + 
+    scale_x_continuous(breaks = 1:length(unique(lineup_data$condition)),
+                       labels = unique(lineup_data$condition)) +
+    geom_rect(mapping = aes(ymax = ymax, ymin = ymin, xmin = xmin, xmax = xmax, fill = arm)) +
+    #theme(panel.background = element_rect(fill = "white", color = "black")) + 
+    theme_bw() + 
+    ylim(c(-1,1)) + 
+    coord_flip() + 
+    geom_hline(yintercept = 0)
 }
 
 ## COLUMN REGISTRATION
@@ -30,10 +73,15 @@ show_tornado_lineup <- function(lineup_data, input) {
 ## These columns are entered as 
 ## Ex: longname = c("Exposure", "Response") , shortname = ("X",:Y") 
 
-app_settings$toRegister = data.frame(	
-	"longname" = c("Adverse Event Labels", "Incidence", "Group", "Grade"),  # TODO 2: Create a list of display names of the quanity to register to columns.
-	"shortname" = c("aecode", "barheights", "groups", "maxgrade") # TODO 3: Create a corresponding list of shortname (must be valid variable names) for each longname.
+app_settings$toRegister = data.frame(
+  "longname" = c("Patient Number", "Treatment", "Condition", "Present"),
+  "shortname" = c("patient_num", "treatment", "condition", "present")
 )
+
+#app_settings$toRegister = data.frame(	
+#	"longname" = c("Adverse Event Labels", "Incidence", "Group", "Grade"),  # TODO 2: Create a list of display names of the quanity to register to columns.
+#	"shortname" = c("aecode", "barheights", "groups", "maxgrade") # TODO 3: Create a corresponding list of shortname (must be valid variable names) for each longname.
+#)
 
 
 ## PLOT SETTING OPTIONS
