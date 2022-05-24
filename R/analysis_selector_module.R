@@ -18,6 +18,7 @@ analysis_selection_ui <- function(id) {
     tags$div(class='mainsectionheader', h3('Multiple Comparison Analysis')),
     fluidRow(
       analysisButton(ns("linregmc"), "linregmc", "Linear Regression Multiple Comparison"),
+      analysisButton(ns("scatterplot"), "scatterplot", "Scatterplot"),
       class = "mainmenurow"
     ) #close fluidRow structure for subgroup analysis
   , class="analysis-selection-container")
