@@ -1,5 +1,5 @@
 ############################################################
-# This is a settings file for the Side Effect Profiling model.
+# This is a settings file for the LONGTITLE model.
 # it contains the information necessary for lineup generation
 # and plot illustration.
 ############################################################
@@ -12,61 +12,6 @@ app_settings$apptitle = "tornado" # Title of app, to be displayed on top of anal
 library(ggplot2)
 
 
-####
-# Data must be in a "long" format where each row corresponds to a patient x ae
-# Eventually need to figure out how to specify an argument that is passed as input
-# to check if we should do a differential tornado plot or not
-
-get_tornado_lineup <- function(orig_data, input) {
-  raw_data <- 
-    orig_data %>% # make a column for every condition
-    rename(patient_num = input$patient_num,
-           treatment = input$treatment,
-           condition = input$condition,
-           present = input$present) %>%
-    pivot_wider(id_cols = c("patient_num", "treatment"), # make wider so each condition has a column
-                names_from = condition, # this makes it easier to get 
-                values_from = present) %>%
-    select(-patient_num)
-  
-  width <- 0.95
-  permuted_data <- 
-    nullabor::lineup(method = nullabor::null_permute("treatment"),
-                     true = raw_data, n = 20) %>%
-    group_by(.sample, treatment) %>% # prepare to compute prevalence in each arm
-    mutate_at(vars(-group_cols()), mean) %>% # computes the prevalence in each arm
-    distinct() %>% # get rid of an duplicate rows
-    ungroup() %>% # no longer need a grouping
-    pivot_longer(cols = -one_of(c("treatment", ".sample")),
-                 names_to = "condition", values_to = "prop") %>%
-    mutate(condition_num = as.numeric(factor(condition, levels = unique(condition))),
-           arm = factor(treatment, levels = c(0,1), labels = c("Control", "Treated")),
-           ymin = ifelse(treatment == 0, -1 * prop, 0),
-           ymax = ifelse(treatment == 0, 0, 1 * prop),
-           xmin = condition_num - width/2,
-           xmax = condition_num + width/2)
-  return(permuted_data)
-	#lineup(null_permute(input$Z), data)
-}
-
-show_tornado_lineup <- function(lineup_data, input) {
-	#lineup_data[,input$Z] <- factor(lineup_data[,input$Z])
-	#ggplot(data=lineup_data, aes_string(x=input$X, y=input$Y, color=input$Z)) +
-	#    facet_wrap(~ .sample) +
-	#    geom_point() +
-	#    scale_fill_discrete() 
-  ggplot(data = lineup_data) +
-    facet_wrap(~.sample) + 
-    scale_x_continuous(breaks = 1:length(unique(lineup_data$condition)),
-                       labels = unique(lineup_data$condition)) +
-    geom_rect(mapping = aes(ymax = ymax, ymin = ymin, xmin = xmin, xmax = xmax, fill = arm)) +
-    #theme(panel.background = element_rect(fill = "white", color = "black")) + 
-    theme_bw() + 
-    ylim(c(-1,1)) + 
-    coord_flip() + 
-    geom_hline(yintercept = 0)
-}
-
 ## COLUMN REGISTRATION
 ## This section is where you define the quantity that the user must register to columns in the uploaded dataset.
 ## For example, this may be the name of the independent, dependent, and covariate columns needed for this analysis.
@@ -74,14 +19,9 @@ show_tornado_lineup <- function(lineup_data, input) {
 ## Ex: longname = c("Exposure", "Response") , shortname = ("X",:Y") 
 
 app_settings$toRegister = data.frame(
-  "longname" = c("Patient Number", "Treatment", "Condition", "Present"),
-  "shortname" = c("patient_num", "treatment", "condition", "present")
+  "longname" = c("Treatment"),
+  "shortname" = c("treatment")
 )
-
-#app_settings$toRegister = data.frame(	
-#	"longname" = c("Adverse Event Labels", "Incidence", "Group", "Grade"),  # TODO 2: Create a list of display names of the quanity to register to columns.
-#	"shortname" = c("aecode", "barheights", "groups", "maxgrade") # TODO 3: Create a corresponding list of shortname (must be valid variable names) for each longname.
-#)
 
 
 ## PLOT SETTING OPTIONS
@@ -109,6 +49,51 @@ app_settings$othersettings = list(
 ##
 ## The plot generation function should plot the dataframe returned by the lineup function
 ##    to show the null plots alongside the true plot. It should return a ggplot2 plot.
+
+get_tornado_lineup <- function(orig_data, input) {
+  permuted_data <-
+    orig_data %>%
+    rename(treatment = input$treatment) %>%
+    nullabor::lineup(method = nullabor::null_permute("treatment"), n = 20)
+  return(permuted_data)
+}
+
+
+show_tornado_lineup <- function(lineup_data, input) {
+  #lineup_data[,input$Z] <- factor(lineup_data[,input$Z])
+  #ggplot(data=lineup_data, aes_string(x=input$X, y=input$Y, color=input$Z)) +
+  #    facet_wrap(~ .sample) +
+  #    geom_point() +
+  #    scale_fill_discrete() 
+  width <- 0.95
+  plot_data <- 
+    lineup_data %>%
+    group_by(.sample, treatment) %>% # prepare to compute prevalence in each arm
+    mutate_at(vars(-group_cols()), mean) %>% # computes the prevalence in each arm
+    distinct() %>% # get rid of an duplicate rows
+    ungroup() %>% # no longer need a grouping
+    pivot_longer(cols = -one_of(c("treatment", ".sample")),
+                 names_to = "condition", values_to = "prop") %>%
+    mutate(condition_num = as.numeric(factor(condition, levels = unique(condition))),
+           arm = factor(treatment, levels = c(0,1), labels = c("Control", "Treated")),
+           ymin = ifelse(treatment == 0, -1 * prop, 0),
+           ymax = ifelse(treatment == 0, 0, 1 * prop),
+           xmin = condition_num - width/2,
+           xmax = condition_num + width/2)
+    
+  
+  ggplot(data = plot_data) +
+    facet_wrap(~.sample) + 
+    scale_x_continuous(breaks = 1:length(unique(plot_data$condition)),
+                       labels = unique(plot_data$condition)) +
+    geom_rect(mapping = aes(ymax = ymax, ymin = ymin, xmin = xmin, xmax = xmax, fill = arm)) +
+    #theme(panel.background = element_rect(fill = "white", color = "black")) + 
+    theme_bw() + 
+    ylim(c(-1,1)) + 
+    coord_flip() + 
+    geom_hline(yintercept = 0)
+}
+
 
 app_settings$lineup_generation_fn = get_tornado_lineup # TODO 6: Define a lineup generation function and reference it here
 app_settings$plot_generation_fn = show_tornado_lineup # TODO 7: Define a plot generation function and reference it here.

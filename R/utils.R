@@ -16,6 +16,9 @@ generate_lineup_test <- function(input, output, state) {
 
 	lineup_data <- app_settings$lineup_generation_fn(data, input)
 	state$true_index <- attr(lineup_data, "pos")
+	# this assumes that lineup_data was returned by nullabor::lineup
+	# any subsequent post-processing should be done in the plot_generation function 
+	
 	plot <- app_settings$plot_generation_fn(lineup_data, input)
 
 	for (setting in input$plotToggleSettings) {

@@ -1,8 +1,8 @@
-
 library(shiny)
 library(purrr)
 library(ggplot2)
 library(dplyr)
+library(tidyr)
 require(scales)
 library(xgxr)
 xgx_theme_set()
