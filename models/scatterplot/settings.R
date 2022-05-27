@@ -51,7 +51,9 @@ app_settings$othersettings = list(
 ##    to show the null plots alongside the true plot. It should return a ggplot2 plot.
 
 get_scatterplot_lineup <- function(data, input){
-  lineup(null_permute(input$Y), data) # default is 20 plots, we should make this changeable
+  nullabor::lineup(method = nullabor::null_permute(input$Y), 
+                   true = data,
+                   n = input$n_plots) # default is 20 plots, we should make this changeable
 }
 
 show_scatterplot_lineup <- function(lineup_data, input){
