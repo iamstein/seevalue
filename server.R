@@ -43,7 +43,8 @@ set_app <- function(app_name, state, output, session) {{
 handle_vote_submit <- function(input, output, state) {
 	vote <- input$vote
 	true <- state$true_index
-	output$explanationSection <- renderUI(get_vote_explanation_message(vote, true))
+	n_plots <- input$n_plots
+	output$explanationSection <- renderUI(get_vote_explanation_message(vote, true, n_plots))
 	output$gotoSignificance <- renderUI(actionButton("gotoSignificance", "Calculate Significance"))
 }
 

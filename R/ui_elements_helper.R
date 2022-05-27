@@ -128,11 +128,14 @@ get_column_picker_ui_saved_analysis <- function(state) {
 	do.call(div, column_reg_inputs)
 }
 
-get_vote_explanation_message <- function(voted, true) {
+get_vote_explanation_message <- function(voted, true, n_plots = 20) {
 	if (voted == true) {
-		message <- paste0("You selected plot ", voted,
-			", which was the true data. This suggests that the visual test statistic was more extreme that 95% of the null plots.",
-			" This may be a reason to believe the data is significant.")
+	  message <- paste0("You selected plot ", voted, ", which was the true data.
+	                    The probability of randomly guessing correctly was ", round(100/n_plots, digits = 2), "%.")
+	  
+		#message <- paste0("You selected plot ", voted,
+		#	", which was the true data. This suggests that the visual test statistic was more extreme that 95% of the null plots.",
+		#	" This may be a reason to believe the data is significant.")
 	}
 	else {
 		message <- paste0("You selected plot ", voted,
