@@ -38,6 +38,7 @@ analyze_page <- {
         sidebarPanel(
           uiOutput("dataChooser"),
           uiOutput("inputColumns"),
+          uiOutput("n_plots"),
           uiOutput("plotSettings"),
           uiOutput("submitSetup"),
           uiOutput("saveSetup"),

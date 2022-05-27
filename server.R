@@ -154,6 +154,7 @@ shinyServer(function(input, output, session) {
 	# setting panel ui elements
     output$dataChooser <- renderUI({get_data_chooser_element(state)})
     output$inputColumns <- renderUI({get_column_picker_ui(state)})
+    output$n_plots <- renderUI({get_n_plots()})
     output$plotSettings <- renderUI({get_plot_settings_panel(app_settings, state)})
     output$submitSetup <- renderUI({get_submit_settings_button(state)})
     output$saveSetup <- renderUI({get_download_setup_button(state)})

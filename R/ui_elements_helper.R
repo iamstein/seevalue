@@ -163,6 +163,13 @@ get_vote_input <- function() {
 	 1, min = 1, max = 20, step = 1)
 }
 
+get_n_plots <- function(){
+  numericInput(inputId = "n_plots", 
+               label = "Number of plots in lineup", 
+               value = 20,
+               min = 2, max = 25)
+}
+
 get_plot_settings_panel <- function(app_settings, state) {
 	selected = NULL
 	if (state$preload_vignette) {
