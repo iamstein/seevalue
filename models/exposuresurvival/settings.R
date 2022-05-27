@@ -18,7 +18,9 @@ get_subgroup_survival_response_lineup <- function(data, input) {
 		quantile=as.integer(cut(data[,input$X], quantile(data[,input$X], probs=0:2/2), include.lowest=TRUE)),
 		status=data[,input$Y],
 		time=data[,input$t])	
-	lineup(null_permute("quantile"), internal_data)
+	return(nullabor::lineup(method = nullabor::null_permute("quantile"), 
+	                 true = internal_data,
+	                 n = input$n_plots))
 }
 
 show_subgroup_survival_response_lineup <- function(lineup_data, input) {

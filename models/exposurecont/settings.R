@@ -5,7 +5,9 @@
 library(nullabor)
 
 get_exposure_continuous_response_lineup <- function(data, input) {
-	lineup(null_permute(input$Y), data)
+	return(nullabor::lineup(method = nullabor::null_permute(input$Y), 
+	                        true = data,
+	                        n = input$n_plots))
 }
 
 show_exposure_continuous_lineup <- function(lineup_data, input) {

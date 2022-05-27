@@ -5,7 +5,12 @@
 library(nullabor)
 
 get_exposure_binary_response_lineup <- function(data, input) {
-	lineup(null_permute(input$Y), data)
+  
+  return(nullabor::lineup(method = nullabor::null_permute(input$Y),
+                          true = data,
+                          n = input$n_plots))
+  
+	#lineup(null_permute(input$Y), data)
 }
 
 show_exposure_binary_lineup <- function(lineup_data, input) {

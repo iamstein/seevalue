@@ -54,7 +54,7 @@ get_tornado_lineup <- function(orig_data, input) {
   permuted_data <-
     orig_data %>%
     rename(treatment = input$treatment) %>%
-    nullabor::lineup(method = nullabor::null_permute("treatment"), n = 20)
+    nullabor::lineup(method = nullabor::null_permute("treatment"), n = input$n_plots)
   return(permuted_data)
 }
 
