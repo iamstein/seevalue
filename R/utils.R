@@ -19,14 +19,22 @@ generate_lineup_test <- function(input, output, state) {
 	# this assumes that lineup_data was returned by nullabor::lineup
 	# any subsequent post-processing should be done in the plot_generation function 
 	
-	plot <- app_settings$plot_generation_fn(lineup_data, input)
-
-	for (setting in input$plotToggleSettings) {
-		plot <- do.call(setting, list(plot))
-	}
-
 	output$instructionBar <- renderUI(get_instruction_bar(state))
-	output$outputPane <- renderPlot({plot})
+	
+	if(app_settings$apptitle %in% c("exposuresurvival", "subgroupsurvival")){
+	  output$outputPane <- renderPlot({
+	    plot_list <- app_settings$plot_generation_fn(lineup_data, input)
+	    gridExtra::grid.arrange(grobs = plot_list,
+	                            ncol = ceiling(sqrt(input$n_plots)),
+	                            nrow = floor(sqrt(input$n_plots)))
+	  })
+	} else{
+	  plot <- app_settings$plot_generation_fn(lineup_data, input)
+	  for (setting in input$plotToggleSettings) {
+	    plot <- do.call(setting, list(plot))
+	  }
+	  output$outputPane <- renderPlot({plot})
+	}
 	output$enterVote <- renderUI({get_vote_input()})
 	output$submitVote <- renderUI(actionButton("submitVote", "Submit Vote"))
 }

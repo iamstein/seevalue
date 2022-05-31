@@ -14,15 +14,52 @@ library(survminer)
 library(nullabor)
 
 get_subgroup_survival_response_lineup <- function(data, input) {
-	internal_data <- data.frame(groupname=data[,input$X], status=data[,input$Y], time=data[,input$t])	
-	lineup(null_permute("groupname"), internal_data)
+	internal_data <- data.frame(groupname=data[,input$X], status=data[,input$Y], time=data[,input$t])
+	
+	return(nullabor::lineup(method = nullabor::null_permute("groupname"),
+	                        true = internal_data,
+	                        n = input$n_plots))
+	#lineup(null_permute("groupname"), internal_data)
 }
 
 show_subgroup_survival_response_lineup <- function(lineup_data, input) {
-	km_fit <- survfit(Surv(time, status) ~ groupname, data = lineup_data, conf.int = 0.95)
-	gg <- ggsurvplot_facet(km_fit, lineup_data, facet.by = c(".sample"), conf.int = TRUE, ggtheme = xgx_theme(), short.panel.labs = TRUE, panel.labs = list(.sample = seq.int(1,20)))
-	gg <- gg + xgx_scale_x_time_units(units_dataset = "day", units_plot = "year")
-	gg
+  grouped_fits <- survminer::surv_fit(formula = Surv(time, status) ~ groupname,
+                                      data = lineup_data, group.by = ".sample")
+  splots <- list() # list to hold output of ggsurvplot
+  ## survminer::ggsurvplot2 outputs a ggplot2 object and some additional stuff
+  plots <- list() # ggsurvplot outputs a ggplot2 object & some additional data,
+  for(i in 1:input$n_plots){
+    
+    tmp_fit <- grouped_fits[[i]]
+    tmp_data <- lineup_data %>% filter(.sample == i)
+    
+    splots[[i]] <- 
+      survminer::ggsurvplot(fit = tmp_fit,data = tmp_data,
+                            linetype = 1,
+                            legend = c(0.8, 0.75),
+                            title = paste("Plot", i), 
+                            ggtheme = theme(plot.title = element_text(size = 10, hjust = 0.5),
+                                            axis.title = element_text(size = 10),
+                                            axis.text = element_text(size = 10),
+                                            legend.text = element_text(size = 8),
+                                            legend.key.size = unit(3, "pt"),
+                                            legend.title = element_text(size = 8),
+                                            legend.background = element_rect(fill = "transparent", color = NA),
+                                            plot.background = element_rect(fill='transparent')),
+                            conf.int = TRUE)
+    
+    plots[[i]] <- splots[[i]][["plot"]]
+  }
+  return(plots)
+  
+  
+  
+	#km_fit <- survfit(Surv(time, status) ~ groupname, data = lineup_data, conf.int = 0.95)
+	#gg <- ggsurvplot_facet(km_fit, lineup_data, facet.by = c(".sample"), conf.int = TRUE, 
+	#                       ggtheme = xgx_theme(), short.panel.labs = TRUE, 
+	#                       panel.labs = list(.sample = seq.int(1,20)))
+	#gg <- gg + xgx_scale_x_time_units(units_dataset = "day", units_plot = "year")
+	#gg
 }
 
 ## COLUMN REGISTRATION
