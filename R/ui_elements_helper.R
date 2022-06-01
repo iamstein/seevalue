@@ -163,7 +163,7 @@ get_instruction_bar <- function(state) {
 get_vote_input <- function() {
 	numericInput("vote",
 	 "Which plot do you think contains the real data?",
-	 1, min = 1, max = 20, step = 1)
+	 1, min = 1, max = 25, step = 1)
 }
 
 get_n_plots <- function(){

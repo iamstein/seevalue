@@ -24,6 +24,7 @@ analysis_selection_ui <- function(id) {
     fluidRow(
       analysisButton(ns("scatterplot"), "scatterplot", "Scatterplot"),
       analysisButton(ns("tornado"), "tornado", "Tornado"),
+      analysisButton(ns("binaryexpbinaryresp"), "binaryexpbinaryresp", "Binary Exposure-Binary Response"),
       class = "mainmenurow"
     ),
     class="analysis-selection-container")

@@ -4,7 +4,7 @@ significance_calculator_ui <- function(id) {
 	ns <- NS(id)
 	div(
       h3("Calculate Lineup Significance"),
-      p("This module will calculate the 'see'-value of the lineup test performance of the team. This value is analogous to a p-value of a traditional lineup, representing the probability that you saw this many team members correctly pick out the data if it was generated under the null hypothesis."),
+      p("This module will calculate the see-value of the lineup test performance of the team. This value is analogous to a p-value of a traditional lineup, representing the probability that you saw this many team members correctly pick out the data if it was generated under the null hypothesis."),
       numericInput(ns("total_participants"), "Total Participants Performing Lineup Test", 1, 1),
       numericInput(ns("correct_participants"), "# of Participants Correctly Identifying Data", 1, 1),
       numericInput(ns("n_plots"), "Number of plots in lineup", value = 20, min= 2, max = 25),
@@ -24,9 +24,9 @@ get_significance_explanation <- function(total, correct, n_plots) {
 	div(
 		br(),
 		
-		p(paste0("You indicated that ", total, " participants were shown a lineup containing ", n_plots, "plots. ",
+		p(paste0("You indicated that ", total, " participants were shown a lineup containing ", n_plots, " plots. ",
 		         correct, " participants correctly identified the real plot. Under the null hypothesis, each participant has a ",
-		         round(100 /n_plots, digits = 2), "% chance of correctly guessing the real plot. Under the null, the number of team members who 
+		         round(100 /n_plots, digits = 3), "% chance of correctly guessing the real plot. Under the null, the number of team members who 
 		         correctly identify the real plot, C, is distributed as a Binomial random variable: C ~ Binomial(", total, ", 1/", n_plots, ").")),
 		br(),
 		p(paste0("see-value = P(C >=", correct, ") = ", round(get_significance(total, correct, n_plots), digits = 3)))
@@ -43,7 +43,7 @@ get_significance_explanation <- function(total, correct, n_plots) {
 }
 
 significance_calculator_server <- function(input, output, session) {
-	output$calculated_p_value <- renderUI({h2(paste0("'See'-Value: ", get_significance(input$total_participants, input$correct_participants, input$n_plots)))})
+	output$calculated_p_value <- renderUI({h2(paste0("see-value: ", round(get_significance(input$total_participants, input$correct_participants, input$n_plots), digits = 3)))})
 	output$p_value_explanation <- renderUI({get_significance_explanation(input$total_participants, input$correct_participants, input$n_plots)})
 }
 	
