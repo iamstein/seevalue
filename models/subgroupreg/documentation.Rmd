@@ -1,0 +1,24 @@
+---
+title: Binary Response vs Continuous Exposure
+output:
+  html_document:
+    theme: null
+    highlight: null
+    fig_retina: null
+    fig_caption: true
+    mathjax: default 
+    keep_md: false
+---
+
+
+## Overview {#shinytab1}
+App overview 
+
+## Lineup Generation {#shinytab2}
+Lineup generation description
+
+### Subheading test
+
+
+## Examples {#shinytab3}
+Here are some examples

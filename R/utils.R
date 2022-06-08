@@ -21,9 +21,21 @@ generate_lineup_test <- function(input, output, state) {
 	
 	output$instructionBar <- renderUI(get_instruction_bar(state))
 	
-	if(app_settings$apptitle %in% c("exposuresurvival", "subgroupsurvival")){
+	if(app_settings$apptitle %in% c("exposuresurvival", "subgroupsurvival", "subgroupreg")){
+	 
 	  output$outputPane <- renderPlot({
-	    plot_list <- app_settings$plot_generation_fn(lineup_data, input)
+	    tmp_plot_list <- app_settings$plot_generation_fn(lineup_data, input)
+	    plot_list <- list()
+	    n_plots <- length(tmp_plot_list)
+	    
+	    for(i in 1:n_plots){
+	     plot <- tmp_plot_list[[i]]
+	     for(setting in input$plotToggleSettings){
+	       plot <- do.call(setting, list(plot))
+	     }
+	     plot_list[[i]] <- plot
+	    }
+	    
 	    gridExtra::grid.arrange(grobs = plot_list,
 	                            ncol = ceiling(sqrt(input$n_plots)),
 	                            nrow = floor(sqrt(input$n_plots)))
