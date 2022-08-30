@@ -12,13 +12,22 @@ output:
 
 
 ## Overview {#shinytab1}
-App overview 
+This analysis module builds lineups from scatterplots of a continuous exposure (X) and a continuous response (Y) to test the null hypothesis
+<center>
+**The response (Y) is independent of the exposure (X)**
+</center>
 
 ## Lineup Generation {#shinytab2}
-Lineup generation description
+The dataset should be saved as a table, with row corresponding to a single observation and at least two columns, one each for the exposure and response.
+The app creates null datasets by permuting the entries in the column containing the observed responses.
+Under the null hypotheses, each permuted dataset is equally likely to occur and we would not expect a scatterplot of permuted responses against exposure to differ too much from a scatterplot of the original data.
 
-### Subheading test
+
+
 
 
 ## Examples {#shinytab3}
-Here are some examples
+As an example, consider the problem of testing for dose-proportionality.
+If a drug is truly dose-proportional, then we would expect that the dose-normalized response (i.e. $Y/X$) to be relatively constant across all dose values.
+We can upload a data table with columns containing with each row corresponding to a single observation and two columns, one each for the dose and dose-normalized response.
+

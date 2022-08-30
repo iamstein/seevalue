@@ -68,6 +68,6 @@ app_settings$plot_generation_fn = show_scatterplot_lineup # TODO 7: Define a plo
 ## Settings to specify inclues the data file, column registration information, and plot settings. 
 ## Effectively you are typing here what the user would have inputted into the left panel (settings).
 
-#app_settings$preload_file = list("datapath"="...") # replace ... with your path.
-#app_settings$toRegister$preload_columns =  c("...", "...") replace "..." with the corresponding column names being used. Follow the order specified in 'toRegister'.
-#app_settings$preload_plot_settings = c(...) # add any plot settings that should be toggled on.
+app_settings$preload_file = list("datapath"="vignette_data/dose_proportional_pos.csv") # replace ... with your path.
+app_settings$toRegister$preload_columns =  c("pred_plasma_conc", "il2_stim_ratio") #replace "..." with the corresponding column names being used. Follow the order specified in 'toRegister'.
+app_settings$preload_plot_settings = c("logx", "logy", "add_line") # add any plot settings that should be toggled on.

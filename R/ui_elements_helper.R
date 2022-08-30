@@ -131,13 +131,12 @@ get_column_picker_ui_saved_analysis <- function(state) {
 get_vote_explanation_message <- function(voted, true) {
 	if (voted == true) {
 		message <- paste0("You selected plot ", voted,
-			", which was the true data. This suggests that the visual test statistic was more extreme that 95% of the null plots.",
-			" This may be a reason to believe the data is significant.")
+			", which was the real plot. This may be a reason to believe the data is significant.")
 	}
 	else {
 		message <- paste0("You selected plot ", voted,
 			", but the true data was in plot ", true,
-			". This suggests that it is difficult to visually distinguish your data from data generated under the null hypothesis.",
+			". This suggests that it is difficult to visually distinguish your data from null data generated.",
 			" This might mean your data cannot rule out the null hypothesis.")
 	}
 
@@ -145,8 +144,8 @@ get_vote_explanation_message <- function(voted, true) {
 }
 
 get_instruction_bar <- function(state) {
-	message = p("Your goal is to try to identify your data among similar plots containing data from the null distribution.
-		 Look for the plot with the data that looks most different from the other plots and enter its index below.")
+	message = p("Your goal is to try to identify the plot containing the real data from a lineup containing plots of null data.",
+	            "Try to look for the plot that looks most different from the other plots and enter its index below.")
 
 	if (state$app_name == "linregmc") {
 		message = p("For this lineup, each row should be considered together as a unit. One row represents the real data, and the other rows represent the permuted data.
