@@ -128,35 +128,31 @@ get_column_picker_ui_saved_analysis <- function(state) {
 	do.call(div, column_reg_inputs)
 }
 
-get_vote_explanation_message <- function(voted, true, n_plots = 20) {
+get_vote_explanation_message <- function(voted, true, true_duplicate, n_plots = 20) {
 	if (voted == true) {
-	  message <- paste0("You selected plot ", voted, ", which was the true data.
+	  message <- paste0("You selected Plot ", voted, ", which visualizes the true data.
 	                    The probability of randomly guessing correctly was ", round(100/n_plots, digits = 2), "%.")
+	} else{
 	  
-		#message <- paste0("You selected plot ", voted,
-		#	", which was the true data. This suggests that the visual test statistic was more extreme that 95% of the null plots.",
-		#	" This may be a reason to believe the data is significant.")
+	  if(is.null(true_duplicate)){
+	    message <- paste0("You selected Plot ", voted,
+	                      "but the true data was in Plot ", true,
+	                      ". Because the true plot was not visually distinguishable from the null plots",
+	                      ", there may not be significant evidence to reject the null on the basis of the plots.")
+	  } else{
+	    if(voted != true & voted %in% true_duplicate){
+	      message <- paste0("You selected Plot ", voted, 
+	                        ", but the true data was in Plot ", true, 
+	                        ". Although the selected plot is visually identically to the plot of the true data,",
+	                        " the underlying datasets are different. This suggests the original plot is consistent with the null hypothesis.")
+	    } else{
+	      message <- paste0("You selected Plot ", voted,
+	                        " but the true data was in Plot ", true,
+	                        ". Because the true plot was not visually distinguishable from the null plots",
+	                        ", there may not be significant evidence to reject the null on the basis of the plots.")
+	    }
+	  }
 	}
-	else {
-		message <- paste0("You selected plot ", voted,
-			", but the true data was in plot ", true,
-			". This suggests that it is difficult to visually distinguish your data from data generated under the null hypothesis.",
-			" This might mean your data cannot rule out the null hypothesis.")
-	}
-
-	p(message)
-}
-
-get_instruction_bar <- function(state) {
-	message = p("Your goal is to try to identify your data among similar plots containing data from the null distribution.
-		 Look for the plot with the data that looks most different from the other plots and enter its index below.")
-
-	if (state$app_name == "linregmc") {
-		message = p("For this lineup, each row should be considered together as a unit. One row represents the real data, and the other rows represent the permuted data.
-			Each row contains the 5 subgroups with the most significant linear regressions. In this case, a significant result is a low p-value for the null hypothesis that the slope is zero.
-			Vote for the row that has the most 'distinct' results using the index on the left.")
-	}
-
 	message
 }
 
@@ -166,7 +162,7 @@ get_vote_input <- function() {
 	 1, min = 1, max = 25, step = 1)
 }
 
-get_n_plots <- function(){
+get_n_plots <- function(app_settings){
   numericInput(inputId = "n_plots", 
                label = "Number of plots in lineup", 
                value = 20,
