@@ -136,7 +136,7 @@ get_vote_explanation_message <- function(voted, true, true_duplicate, n_plots = 
 	  
 	  if(is.null(true_duplicate)){
 	    message <- paste0("You selected Plot ", voted,
-	                      "but the true data was in Plot ", true,
+	                      " but the true data was in Plot ", true,
 	                      ". Because the true plot was not visually distinguishable from the null plots",
 	                      ", there may not be significant evidence to reject the null on the basis of the plots.")
 	  } else{
@@ -155,6 +155,20 @@ get_vote_explanation_message <- function(voted, true, true_duplicate, n_plots = 
 	}
 	message
 }
+
+get_instruction_bar <- function(state) {
+  message = p("Your goal is to try to identify the plot containing the real data from a lineup containing plots of null data.",
+              "Try to look for the plot that looks most different from the other plots and enter its index below.")
+  
+  if (state$app_name == "linregmc") {
+    message = p("For this lineup, each row should be considered together as a unit. One row represents the real data, and the other rows represent the permuted data.
+			Each row contains the 5 subgroups with the most significant linear regressions. In this case, a significant result is a low p-value for the null hypothesis that the slope is zero.
+			Vote for the row that has the most 'distinct' results using the index on the left.")
+  }
+  message
+}
+
+
 
 get_vote_input <- function() {
 	numericInput("vote",
