@@ -17,11 +17,11 @@ analysis_selection_ui <- function(id) {
       analysisButton(ns("subgroupsurvival"), "subgroupsurvival", "Survival time by subgroup"),
       class = "mainmenurow"
     ), #close fluidRow structure for subgroup analysis
-    tags$div(class='mainsectionheader', h3('Multiple Comparison Analysis')),
-    fluidRow(
-      analysisButton(ns("linregmc"), "linregmc", "Linear Regression Multiple Comparison"),
-      class = "mainmenurow"
-    ), #close fluidRow structure for subgroup analysis
+    #tags$div(class='mainsectionheader', h3('Multiple Comparison Analysis')),
+    #fluidRow(
+    #  analysisButton(ns("linregmc"), "linregmc", "Linear Regression Multiple Comparison"),
+    #  class = "mainmenurow"
+    #), #close fluidRow structure for subgroup analysis
     tags$div(class='mainsectionheader', h3('Other')),
     fluidRow(
       #analysisButton(ns("scatterplot"), "scatterplot", "Scatterplot"),
