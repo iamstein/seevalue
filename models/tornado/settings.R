@@ -72,8 +72,8 @@ show_tornado_lineup <- function(lineup_data, input) {
     mutate_at(vars(-group_cols()), mean) %>% # computes the prevalence in each arm
     distinct() %>% # get rid of an duplicate rows
     ungroup() %>% # no longer need a grouping
-    pivot_longer(cols = -one_of(c("treatment", ".sample")),
-                 names_to = "condition", values_to = "prop") %>%
+    tidyr::pivot_longer(cols = -one_of(c("treatment", ".sample")),
+                        names_to = "condition", values_to = "prop") %>%
     mutate(condition_num = as.numeric(factor(condition, levels = unique(condition))),
            arm = factor(treatment, levels = c(0,1), labels = c("Control", "Treated")),
            ymin = ifelse(treatment == 0, -1 * prop, 0),
@@ -81,6 +81,7 @@ show_tornado_lineup <- function(lineup_data, input) {
            xmin = condition_num - width/2,
            xmax = condition_num + width/2)
     
+  y_lim <- c(-1,1) * max(abs(c(plot_data$ymin, plot_data$ymax)))
   
   ggplot(data = plot_data) +
     facet_wrap(~.sample) + 
@@ -89,7 +90,7 @@ show_tornado_lineup <- function(lineup_data, input) {
     geom_rect(mapping = aes(ymax = ymax, ymin = ymin, xmin = xmin, xmax = xmax, fill = arm)) +
     #theme(panel.background = element_rect(fill = "white", color = "black")) + 
     theme_bw() + 
-    ylim(c(-1,1)) + 
+    ylim(y_lim) + 
     coord_flip() + 
     geom_hline(yintercept = 0)
 }
