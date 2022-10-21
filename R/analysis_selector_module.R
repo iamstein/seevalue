@@ -7,6 +7,7 @@ analysis_selection_ui <- function(id) {
       analysisButton(ns("binaryexpbinaryresp"), "binaryexpbinaryresp", "Binary response vs binary exposure"),
       analysisButton(ns("exposurebinary"), "exposurebinary", "Binary response vs continuous exposure"),
       analysisButton(ns("scatterplot"), "scatterplot", "Continuous response vs continuous response"),
+
       analysisButton(ns("exposuresurvival"), "exposuresurvival", "Survival time vs exposure"),
       class = "mainmenurow"
     ), #close fluidRow structure for exposure-response

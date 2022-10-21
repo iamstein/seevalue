@@ -37,3 +37,4 @@ We can use the following lineup to test the null of dose-proportionality.
 The real data is plotted in Plot 15, which displays a pronounced increasing trend that is absent in all but one of the other 19 plots.
 Although there is also an increasing trend in Plot 16, there is much more variation around the fitted line in that plot that there is in Plot 15.
 Since it is quite easy to distinguish Plot 15 from the rest of the plots in the lineup, we may reject the null hypothesis that the drug is dose-proportional.
+
