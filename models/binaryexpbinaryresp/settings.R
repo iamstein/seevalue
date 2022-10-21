@@ -4,7 +4,7 @@
 # and plot illustration.
 ############################################################
 app_settings = list()
-app_settings$apptitle = "Binary exposure - Binary response" # Title of app, to be displayed on top of analyze tab
+app_settings$apptitle = "Binary response vs binary exposure" # Title of app, to be displayed on top of analyze tab
 
 
 ### IMPORTS
@@ -50,6 +50,10 @@ app_settings$othersettings = list(
 ##    to show the null plots alongside the true plot. It should return a ggplot2 plot.
 
 get_bin_exp_bin_resp_lineup <- function(data, input){
+  #if(is.null(input$n_plots)) input$n_plots <- 20
+  if(!is.null(names(input$X))) names(input$X) <- NULL
+  if(!is.null(names(input$Y))) names(input$Y) <- NULL
+  
   lineup_data <- 
     data %>%
     rename(X = input$X,
@@ -57,6 +61,7 @@ get_bin_exp_bin_resp_lineup <- function(data, input){
     nullabor::lineup(method = nullabor::null_permute("Y"),n = input$n_plots)
   return(lineup_data)
 }
+
 show_bin_exp_bin_resp_lineup <- function(lineup_data, input){
   
   plot_data <-
@@ -67,7 +72,7 @@ show_bin_exp_bin_resp_lineup <- function(lineup_data, input){
               avg = mean(Y)) %>%
     ungroup() %>%
     mutate(error = count * avg * (1 - avg),
-           X = factor(X))
+           X = factor(X, levels = c(0,1), labels = c("Control", "Treated")))
   
   ggplot(data = plot_data, mapping = aes(x = X, y = total, fill = X)) + 
     facet_wrap(~.sample) + 
@@ -90,6 +95,7 @@ app_settings$plot_generation_fn = show_bin_exp_bin_resp_lineup# TODO 7: Define a
 ## Settings to specify inclues the data file, column registration information, and plot settings. 
 ## Effectively you are typing here what the user would have inputted into the left panel (settings).
 
-#app_settings$preload_file = list("datapath"="...") # replace ... with your path.
-#app_settings$toRegister$preload_columns =  c("...", "...") replace "..." with the corresponding column names being used. Follow the order specified in 'toRegister'.
-#app_settings$preload_plot_settings = c(...) # add any plot settings that should be toggled on.
+app_settings$preload_file = list("datapath"="vignette_data/bin_exp_bin_resp.csv")
+app_settings$toRegister$preload_columns =  c("Arm", "Response") #replace "..." with the corresponding column names being used. Follow the order specified in 'toRegister'.
+app_settings$preload_plot_settings = c() # add any plot settings that should be toggled on.
+#app_settings$preload_n_plots <- 20

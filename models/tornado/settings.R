@@ -51,6 +51,7 @@ app_settings$othersettings = list(
 ##    to show the null plots alongside the true plot. It should return a ggplot2 plot.
 
 get_tornado_lineup <- function(orig_data, input) {
+  if(!is.null(names(input$treatment))) names(input$treatment) <- NULL
   permuted_data <-
     orig_data %>%
     rename(treatment = input$treatment) %>%
@@ -104,6 +105,6 @@ app_settings$plot_generation_fn = show_tornado_lineup # TODO 7: Define a plot ge
 ## Settings to specify inclues the data file, column registration information, and plot settings. 
 ## Effectively you are typing here what the user would have inputted into the left panel (settings).
 
-#app_settings$preload_file = list("datapath"="...") # replace ... with your path.
-#app_settings$toRegister$preload_columns =  c("...", "...") replace "..." with the corresponding column names being used. Follow the order specified in 'toRegister'.
-#app_settings$preload_plot_settings = c(...) # add any plot settings that should be toggled on.
+app_settings$preload_file = list("datapath"="vignette_data/tornado_synthetic_pos.csv") # replace ... with your path.
+app_settings$toRegister$preload_columns =  c("treatment") #replace "..." with the corresponding column names being used. Follow the order specified in 'toRegister'.
+app_settings$preload_plot_settings = c() # add any plot settings that should be toggled on.
