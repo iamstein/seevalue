@@ -1,14 +1,17 @@
 ############################################################
-# This is a settings file for the scatterplot model.
+# This is a settings file for the LONGTITLE model.
 # it contains the information necessary for lineup generation
 # and plot illustration.
 ############################################################
 app_settings = list()
-app_settings$apptitle = "Scatterplot" # Title of app, to be displayed on top of analyze tab
+app_settings$apptitle = "Subgroup Regression" # Title of app, to be displayed on top of analyze tab
+
 
 ### IMPORTS
 # TODO 1: Add necessary imports
-library(nullabor)
+library(ggplot)
+library(xgxr)
+
 
 ## COLUMN REGISTRATION
 ## This section is where you define the quantity that the user must register to columns in the uploaded dataset.
@@ -17,8 +20,8 @@ library(nullabor)
 ## Ex: longname = c("Exposure", "Response") , shortname = ("X",:Y") 
 
 app_settings$toRegister = data.frame(	
-	"longname" = c("Exposure","Response"),  # TODO 2: Create a list of display names of the quanity to register to columns.
-	"shortname" = c("X", "Y") # TODO 3: Create a corresponding list of shortname (must be valid variable names) for each longname.
+	"longname" = c("Exposure", "Response", "Subgroup"),  # TODO 2: Create a list of display names of the quanity to register to columns.
+	"shortname" = c("X", "Y", "group_id") # TODO 3: Create a corresponding list of shortname (must be valid variable names) for each longname.
 )
 
 
@@ -50,26 +53,44 @@ app_settings$othersettings = list(
 ## The plot generation function should plot the dataframe returned by the lineup function
 ##    to show the null plots alongside the true plot. It should return a ggplot2 plot.
 
-get_scatterplot_lineup <- function(data, input){
-  nullabor::lineup(method = nullabor::null_permute(input$Y), 
-                   true = data,
-                   n = input$n_plots) # default is 20 plots, we should make this changeable
+get_subgroupreg_lineup <- function(data, input){
+  lineup_data <- 
+    data %>%
+    nullabor::lineup(method = nullabor::null_permute(input$groupID),
+                     n = input$n_plots)
+  return(lineup_data)
 }
 
-show_scatterplot_lineup <- function(lineup_data, input){
-  ggplot(data = lineup_data, aes_string(x=input$X, y=input$Y)) +
-    facet_wrap(~.sample) +
-    geom_point()
+single_plot <- function(data, input, title = "1"){
+  group_id <- data[,input$groupID]
+  g <- ggplot(data = data, mapping = aes_string(x = input$X, y = input$Y)) +
+    facet_wrap(facets = vars(group_id), nrow = 1) +
+    geom_point() + 
+    ggtitle(label = paste("Plot", title)) +
+    theme(plot.title = element_text(hjust = 0.5))
+  return(g)
 }
 
-app_settings$lineup_generation_fn = get_scatterplot_lineup # TODO 6: Define a lineup generation function and reference it here
-app_settings$plot_generation_fn = show_scatterplot_lineup # TODO 7: Define a plot generation function and reference it here.
+show_subgroupreg_lineup <- function(lineup_data, input){
+  tmp_plot_list <- list()
+  for(i in 1:input$n_plots){
+    tmp_plot_list[[i]] <- 
+      lineup_data %>%
+      filter(.sample == i) %>%
+      single_plot(input = input, title = toString(i))
+  }
+  return(tmp_plot_list)
+}
+
+
+app_settings$lineup_generation_fn = get_subgroupreg_lineup # TODO 6: Define a lineup generation function and reference it here
+app_settings$plot_generation_fn = show_subgroupreg_lineup # TODO 7: Define a plot generation function and reference it here.
 
 
 ## TODO 6: If there is an example vignette for the user to load, uncomment below and specify settings.
 ## Settings to specify inclues the data file, column registration information, and plot settings. 
 ## Effectively you are typing here what the user would have inputted into the left panel (settings).
 
-app_settings$preload_file = list("datapath"="vignette_data/dose_proportional_pos.csv") # replace ... with your path.
-app_settings$toRegister$preload_columns =  c("pred_plasma_conc", "il2_stim_ratio") #replace "..." with the corresponding column names being used. Follow the order specified in 'toRegister'.
-app_settings$preload_plot_settings = c("logx", "logy", "add_line") # add any plot settings that should be toggled on.
+#app_settings$preload_file = list("datapath"="...") # replace ... with your path.
+#app_settings$toRegister$preload_columns =  c("...", "...") replace "..." with the corresponding column names being used. Follow the order specified in 'toRegister'.
+#app_settings$preload_plot_settings = c(...) # add any plot settings that should be toggled on.

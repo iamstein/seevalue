@@ -1,14 +1,15 @@
 ############################################################
-# This is a settings file for the scatterplot model.
+# This is a settings file for the LONGTITLE model.
 # it contains the information necessary for lineup generation
 # and plot illustration.
 ############################################################
 app_settings = list()
-app_settings$apptitle = "Scatterplot" # Title of app, to be displayed on top of analyze tab
+app_settings$apptitle = "Binary response vs binary exposure" # Title of app, to be displayed on top of analyze tab
+
 
 ### IMPORTS
 # TODO 1: Add necessary imports
-library(nullabor)
+
 
 ## COLUMN REGISTRATION
 ## This section is where you define the quantity that the user must register to columns in the uploaded dataset.
@@ -17,7 +18,7 @@ library(nullabor)
 ## Ex: longname = c("Exposure", "Response") , shortname = ("X",:Y") 
 
 app_settings$toRegister = data.frame(	
-	"longname" = c("Exposure","Response"),  # TODO 2: Create a list of display names of the quanity to register to columns.
+	"longname" = c("Arm", "Response"),  # TODO 2: Create a list of display names of the quanity to register to columns.
 	"shortname" = c("X", "Y") # TODO 3: Create a corresponding list of shortname (must be valid variable names) for each longname.
 )
 
@@ -26,9 +27,7 @@ app_settings$toRegister = data.frame(
 ## Create a list of toggle-able plot settings that will appear as options to the user.
 ## The list should map display names to the name of a function in R/setting_handler.R
 
-app_settings$plotOptions = list("Log X" = "logx", 
-                                "Log Y" = "logy",
-                                "Add line" = "add_line") # TODO 4: Enter the toggled plot settings in the form of "display_name = function_name"
+app_settings$plotOptions = list() # TODO 4: Enter the toggled plot settings in the form of "display_name = function_name"
 
 
 ## ADDITIONAL SETTTINGS
@@ -50,26 +49,53 @@ app_settings$othersettings = list(
 ## The plot generation function should plot the dataframe returned by the lineup function
 ##    to show the null plots alongside the true plot. It should return a ggplot2 plot.
 
-get_scatterplot_lineup <- function(data, input){
-  nullabor::lineup(method = nullabor::null_permute(input$Y), 
-                   true = data,
-                   n = input$n_plots) # default is 20 plots, we should make this changeable
+get_bin_exp_bin_resp_lineup <- function(data, input){
+  #if(is.null(input$n_plots)) input$n_plots <- 20
+  if(!is.null(names(input$X))) names(input$X) <- NULL
+  if(!is.null(names(input$Y))) names(input$Y) <- NULL
+  
+  lineup_data <- 
+    data %>%
+    rename(X = input$X,
+           Y = input$Y) %>%
+    nullabor::lineup(method = nullabor::null_permute("Y"),n = input$n_plots)
+  return(lineup_data)
 }
 
-show_scatterplot_lineup <- function(lineup_data, input){
-  ggplot(data = lineup_data, aes_string(x=input$X, y=input$Y)) +
-    facet_wrap(~.sample) +
-    geom_point()
+show_bin_exp_bin_resp_lineup <- function(lineup_data, input){
+  
+  plot_data <-
+    lineup_data %>%
+    group_by(.sample, X) %>%
+    summarise(total = sum(Y),
+              count = n(),
+              avg = mean(Y)) %>%
+    ungroup() %>%
+    mutate(error = count * avg * (1 - avg),
+           X = factor(X, levels = c(0,1), labels = c("Control", "Treated")))
+  
+  ggplot(data = plot_data, mapping = aes(x = X, y = total, fill = X)) + 
+    facet_wrap(~.sample) + 
+    geom_bar(stat = "identity", color = "black", position = position_dodge(),
+             width = 0.95) +
+    geom_errorbar(aes(ymin = total, ymax = total + error), width = 0.2,
+                  position = position_dodge(0.9)) + 
+    xlab(input$X) + 
+    ylab(input$Y) + 
+    scale_fill_discrete(name = "Arm") + 
+    theme_bw()
 }
 
-app_settings$lineup_generation_fn = get_scatterplot_lineup # TODO 6: Define a lineup generation function and reference it here
-app_settings$plot_generation_fn = show_scatterplot_lineup # TODO 7: Define a plot generation function and reference it here.
+
+app_settings$lineup_generation_fn = get_bin_exp_bin_resp_lineup # TODO 6: Define a lineup generation function and reference it here
+app_settings$plot_generation_fn = show_bin_exp_bin_resp_lineup# TODO 7: Define a plot generation function and reference it here.
 
 
 ## TODO 6: If there is an example vignette for the user to load, uncomment below and specify settings.
 ## Settings to specify inclues the data file, column registration information, and plot settings. 
 ## Effectively you are typing here what the user would have inputted into the left panel (settings).
 
-app_settings$preload_file = list("datapath"="vignette_data/dose_proportional_pos.csv") # replace ... with your path.
-app_settings$toRegister$preload_columns =  c("pred_plasma_conc", "il2_stim_ratio") #replace "..." with the corresponding column names being used. Follow the order specified in 'toRegister'.
-app_settings$preload_plot_settings = c("logx", "logy", "add_line") # add any plot settings that should be toggled on.
+app_settings$preload_file = list("datapath"="vignette_data/bin_exp_bin_resp.csv")
+app_settings$toRegister$preload_columns =  c("Arm", "Response") #replace "..." with the corresponding column names being used. Follow the order specified in 'toRegister'.
+app_settings$preload_plot_settings = c() # add any plot settings that should be toggled on.
+#app_settings$preload_n_plots <- 20

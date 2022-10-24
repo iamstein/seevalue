@@ -23,7 +23,8 @@ generate_documentation <- function(docfilename, is_walkthrough = FALSE)
     }
     html.raw <- XML::htmlTreeParse(docfilename, useInternalNodes = TRUE, encoding='UTF-8')
     shinyblocks = XML::getNodeSet(html.raw, "//div[@id[starts-with(., 'shinytab')]]")
-    for (i in 1:2)
+    #for (i in 1:2)
+    for(i in 1:length(shinyblocks))
     {
       subDoc <- XML::xmlDoc(shinyblocks[[i]])
       content <- XML::xpathApply(subDoc, "//div[@id[starts-with(., 'shinytab')]]", XML::saveXML, encoding='UTF-8')

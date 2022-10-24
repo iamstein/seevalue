@@ -43,13 +43,15 @@ set_app <- function(app_name, state, output, session) {{
 handle_vote_submit <- function(input, output, state) {
 	vote <- input$vote
 	true <- state$true_index
-	output$explanationSection <- renderUI(get_vote_explanation_message(vote, true))
+	n_plots <- input$n_plots
+	if(!is.null(state$true_duplicate)) true_duplicate <- state$true_duplicate
+	else true_duplicate <- NULL
+	output$explanationSection <- renderUI(get_vote_explanation_message(vote, true, true_duplicate, n_plots))
 	output$gotoSignificance <- renderUI(actionButton("gotoSignificance", "Calculate Significance"))
 }
 
 load_vignette <- function(input, output, state) {
 	reset_analysis(output, state)
-
 	state$will_upload <- FALSE
 	state$uploading_shared <- FALSE
 	state$preload_vignette <- TRUE
@@ -61,10 +63,12 @@ load_vignette <- function(input, output, state) {
 	state$input_overrides[["plotToggleSettings"]] = state$app_settings$preload_plot_settings
 	
 	apply(state$app_settings$toRegister, 1, set_preload_column_inputs)
+	
 
 	state$data <- load_data(state$app_settings$preload_file, state)
 	modified_inputs <- overwrite_list(input, state$input_overrides)
 
+	modified_inputs$n_plots <- 20
 	generate_lineup_test(modified_inputs, output, state)
 }
 
@@ -154,6 +158,7 @@ shinyServer(function(input, output, session) {
 	# setting panel ui elements
     output$dataChooser <- renderUI({get_data_chooser_element(state)})
     output$inputColumns <- renderUI({get_column_picker_ui(state)})
+    output$n_plots <- renderUI({get_n_plots(app_settings)})
     output$plotSettings <- renderUI({get_plot_settings_panel(app_settings, state)})
     output$submitSetup <- renderUI({get_submit_settings_button(state)})
     output$saveSetup <- renderUI({get_download_setup_button(state)})

@@ -5,7 +5,12 @@
 library(nullabor)
 
 get_exposure_binary_response_lineup <- function(data, input) {
-	lineup(null_permute(input$Y), data)
+  
+  return(nullabor::lineup(method = nullabor::null_permute(input$Y),
+                          true = data,
+                          n = input$n_plots))
+  
+	#lineup(null_permute(input$Y), data)
 }
 
 show_exposure_binary_lineup <- function(lineup_data, input) {
@@ -39,6 +44,6 @@ app_settings$lineup_generation_fn = get_exposure_binary_response_lineup
 app_settings$plot_generation_fn = show_exposure_binary_lineup
 
 ## Preload
-app_settings$preload_file = list("datapath"="vignette_data/fake_continuous_exposure_binary_response.csv")
+app_settings$preload_file = list("datapath"="vignette_data/continuous_exposure_binary_response.csv")
 app_settings$toRegister$preload_columns = c("measured_plasma_conc", "outcome") 
 app_settings$preload_plot_settings = c("logx", "overlay_logistic_binary")
