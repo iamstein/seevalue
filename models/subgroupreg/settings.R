@@ -9,7 +9,7 @@ app_settings$apptitle = "Subgroup Regression" # Title of app, to be displayed on
 
 ### IMPORTS
 # TODO 1: Add necessary imports
-library(ggplot)
+library(ggplot2)
 library(xgxr)
 
 
