@@ -18,14 +18,12 @@ The module creates lineups to visually test the null hypothesis
 **The binary outcome (Y) is independent of the binary exposure (X).**
 </center>
 
-
-## Lineup Generation {#shinytab2}
 To use this module, you should upload a data table with one row per observation and two columns, one for the exposure and one for the response.
 Note that the the values in the columns for exposure and response must be 0 or 1.
 The module generates null datasets by permuting the entries in the exposure column while keeping the response column fixed.
 The module then visualizes each null dataset using a bar graph.
 
-## Examples {#shinytab3}
+## Example {#shinytab2}
 The vignette dataset contains measurements from a two-arm study to compare response rates to two different dosing regiments.
 In the dataset, only 5 out of the 60 patients in the control arm responded while 10 out of the 60 patients in the treated arm responded.
 We can use the following lineup to test the null hypothesis that response rate is independent of study arm.

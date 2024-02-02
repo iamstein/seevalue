@@ -6,8 +6,7 @@ analysis_selection_ui <- function(id) {
       #analysisButton(ns("exposurecont"), "exposurecont", "old Continuous response vs continuous exposure"),
       analysisButton(ns("binaryexpbinaryresp"), "binaryexpbinaryresp", "Binary response vs binary exposure"),
       analysisButton(ns("exposurebinary"), "exposurebinary", "Binary response vs continuous exposure"),
-      analysisButton(ns("scatterplot"), "scatterplot", "Continuous response vs continuous response"),
-
+      analysisButton(ns("scatterplot"), "scatterplot", "Continuous response vs continuous exposure"),
       analysisButton(ns("exposuresurvival"), "exposuresurvival", "Survival time vs exposure"),
       class = "mainmenurow"
     ), #close fluidRow structure for exposure-response
@@ -25,9 +24,7 @@ analysis_selection_ui <- function(id) {
     #), #close fluidRow structure for subgroup analysis
     tags$div(class='mainsectionheader', h3('Other')),
     fluidRow(
-      #analysisButton(ns("scatterplot"), "scatterplot", "Scatterplot"),
       analysisButton(ns("tornado"), "tornado", "Tornado"),
-      #analysisButton(ns("binaryexpbinaryresp"), "binaryexpbinaryresp", "Binary Exposure-Binary Response"),
       class = "mainmenurow"
     ),
     class="analysis-selection-container")
